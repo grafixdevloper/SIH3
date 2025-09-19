@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test - Gov Internship Matcher</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        pre { background-color: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        .loading { opacity: 0.6; }
+    </style>
+</head>
+<body>
+    <h1>🧪 API Test Page</h1>
+    <p>Use this page to test the API endpoints and debug connection issues.</p>
+
+    <div class="test-section">
+        <h2>Environment Info</h2>
+        <p><strong>Current URL:</strong> <span id="current-url"></span></p>
+        <p><strong>Detected API Base:</strong> <span id="api-base"></span></p>
+    </div>
+
+    <div class="test-section">
+        <h2>Quick Tests</h2>
+        <button onclick="testHealth()">Test Health Endpoint</button>
+        <button onclick="testSimpleGet()">Test Simple GET</button>
+        <button onclick="testMatchSkills()">Test Match Skills POST</button>
+        <button onclick="testAll()">Run All Tests</button>
+        <div id="test-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Manual Test</h2>
+        <label for="test-skills">Skills (comma separated):</label><br>
+        <input type="text" id="test-skills" value="Python, Data Analysis, Machine Learning" style="width: 300px; padding: 5px;">
+        <br><br>
+        <button onclick="manualTest()">Test Manual Skills</button>
+        <div id="manual-results"></div>
+    </div>
+
+    <script>
+        // Detect API base URL
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000' 
+            : window.location.origin;
+
+        document.getElementById('current-url').textContent = window.location.href;
+        document.getElementById('api-base').textContent = API_BASE_URL;
+
+        function addResult(testName, success, data, error = null) {
+            const results = document.getElementById('test-results');
+            const div = document.createElement('div');
+            div.className = success ? 'test-section success' : 'test-section error';
+            
+            const timestamp = new Date().toLocaleTimeString();
+            let html = `<h3>${success ? '✅' : '❌'} ${testName} (${timestamp})</h3>`;
+            
+            if (success) {
+                html += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } else {
+                html += `<p><strong>Error:</strong> ${error}</p>`;
+                if (data) {
+                    html += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                }
+            }
+            
+            div.innerHTML = html;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+        }
+
+        async function testHealth() {
+            try {
+                console.log('Testing health endpoint:', `${API_BASE_URL}/api/health`);
+                const response = await fetch(`${API_BASE_URL}/api/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addResult('Health Check', true, data);
+                } else {
+                    addResult('Health Check', false, data, `HTTP ${response.status}`);
+                }
+            } catch (error) {
+                addResult('Health Check', false, null, error.message);
+            }
+        }
+
+        async function testSimpleGet() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/test`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addResult('Simple GET Test', true, data);
+                } else {
+                    addResult('Simple GET Test', false, data, `HTTP ${response.status}`);
+                }
+            } catch (error) {
+                addResult('Simple GET Test', false, null, error.message);
+            }
+        }
+
+        async function testMatchSkills() {
+            try {
+                const testData = { skills: ['Python', 'Data Analysis'] };
+                const response = await fetch(`${API_BASE_URL}/api/match-skills`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addResult('Match Skills POST', true, { 
+                        input: testData, 
+                        output: data,
+                        matches_found: data.length 
+                    });
+                } else {
+                    addResult('Match Skills POST', false, data, `HTTP ${response.status}`);
+                }
+            } catch (error) {
+                addResult('Match Skills POST', false, null, error.message);
+            }
+        }
+
+        async function manualTest() {
+            const skillsInput = document.getElementById('test-skills').value;
+            const skills = skillsInput.split(',').map(s => s.trim()).filter(s => s);
+            
+            try {
+                const testData = { skills: skills };
+                const response = await fetch(`${API_BASE_URL}/api/match-skills`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                const data = await response.json();
+                const results = document.getElementById('manual-results');
+                
+                if (response.ok) {
+                    results.innerHTML = `
+                        <div class="test-section success">
+                            <h3>✅ Manual Test Success</h3>
+                            <p><strong>Skills tested:</strong> ${skills.join(', ')}</p>
+                            <p><strong>Matches found:</strong> ${data.length}</p>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    results.innerHTML = `
+                        <div class="test-section error">
+                            <h3>❌ Manual Test Failed</h3>
+                            <p><strong>Error:</strong> HTTP ${response.status}</p>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                const results = document.getElementById('manual-results');
+                results.innerHTML = `
+                    <div class="test-section error">
+                        <h3>❌ Manual Test Error</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function testAll() {
+            document.getElementById('test-results').innerHTML = '<p>Running all tests...</p>';
+            await testHealth();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await testSimpleGet();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await testMatchSkills();
+        }
+
+        // Run health check on page load
+        window.addEventListener('load', testHealth);
+    </script>
+</body>
+</html>

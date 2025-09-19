@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Server Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #005a8b; }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <h1>🚀 API Server Test Page</h1>
+    <p>Use this page to test if your local API server is running correctly.</p>
+
+    <div class="test-section">
+        <h2>Step 1: Server Status</h2>
+        <button onclick="testHealth()">Test API Health</button>
+        <div id="health-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Step 2: Test Skills Matching</h2>
+        <button onclick="testSkillsMatching()">Test Skills Matching</button>
+        <div id="skills-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Step 3: All Endpoints</h2>
+        <button onclick="testAllEndpoints()">Test All Endpoints</button>
+        <div id="all-result" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000';
+
+        function displayResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `result ${type}`;
+        }
+
+        async function testHealth() {
+            displayResult('health-result', 'Testing API health...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/health`);
+                if (response.ok) {
+                    const data = await response.json();
+                    displayResult('health-result', 
+                        `✅ Server is running!\nStatus: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`, 
+                        'success');
+                } else {
+                    displayResult('health-result', 
+                        `❌ Server responded with error: ${response.status} ${response.statusText}`, 
+                        'error');
+                }
+            } catch (error) {
+                displayResult('health-result', 
+                    `❌ Cannot connect to server!\nError: ${error.message}\n\nMake sure to:\n1. Run 'npm run dev' or start.bat\n2. Wait for "API running on port 3000" message`, 
+                    'error');
+            }
+        }
+
+        async function testSkillsMatching() {
+            displayResult('skills-result', 'Testing skills matching...', 'info');
+            
+            // Add a small delay to avoid overwhelming the server
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/match-skills`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ skills: ['Python', 'Data Analysis', 'Machine Learning'] })
+                });
+
+                console.log('Skills matching response status:', response.status);
+                console.log('Skills matching response headers:', Object.fromEntries(response.headers.entries()));
+
+                if (response.ok) {
+                    const matches = await response.json();
+                    displayResult('skills-result', 
+                        `✅ Skills matching works!\nFound ${matches.length} matches\nTop match: ${matches[0]?.title || 'None'} (${matches[0]?.match_score || 0}% match)`, 
+                        'success');
+                } else {
+                    const errorText = await response.text();
+                    console.error('Skills matching error response:', errorText);
+                    displayResult('skills-result', 
+                        `❌ Skills matching failed: ${response.status} ${response.statusText}\nError: ${errorText}`, 
+                        'error');
+                }
+            } catch (error) {
+                console.error('Skills matching request failed:', error);
+                displayResult('skills-result', 
+                    `❌ Skills matching request failed!\nError: ${error.message}\n\nThis might be a CORS issue or server overload.\nTry refreshing and testing one endpoint at a time.`, 
+                    'error');
+            }
+        }
+
+        async function testAllEndpoints() {
+            displayResult('all-result', 'Testing all endpoints...', 'info');
+            
+            const endpoints = [
+                { url: '/api/health', method: 'GET', name: 'Health Check' },
+                { url: '/api/test', method: 'GET', name: 'Test GET' },
+                { url: '/api/test', method: 'POST', name: 'Test POST', body: { test: 'data' } },
+                { url: '/api/internships', method: 'GET', name: 'Get Internships' },
+                { url: '/api/match-skills', method: 'POST', name: 'Match Skills', body: { skills: ['Python'] } }
+            ];
+
+            let results = [];
+            
+            // Test endpoints one by one with delays to avoid overwhelming the server
+            for (const endpoint of endpoints) {
+                try {
+                    console.log(`Testing ${endpoint.name}...`);
+                    
+                    const options = {
+                        method: endpoint.method,
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    };
+                    
+                    if (endpoint.body) {
+                        options.body = JSON.stringify(endpoint.body);
+                    }
+                    
+                    const response = await fetch(`${API_BASE}${endpoint.url}`, options);
+                    const status = response.ok ? '✅' : '❌';
+                    results.push(`${status} ${endpoint.name}: ${response.status} ${response.statusText}`);
+                    
+                    console.log(`${endpoint.name} result: ${response.status} ${response.statusText}`);
+                    
+                    // Add delay between requests
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    
+                } catch (error) {
+                    console.error(`${endpoint.name} failed:`, error);
+                    results.push(`❌ ${endpoint.name}: ${error.message}`);
+                }
+            }
+            
+            const allPassed = results.every(r => r.startsWith('✅'));
+            displayResult('all-result', results.join('\n'), allPassed ? 'success' : 'error');
+        }
+
+        // Auto-test health on page load
+        window.addEventListener('load', () => {
+            setTimeout(testHealth, 1000);
+        });
+    </script>
+</body>
+</html>

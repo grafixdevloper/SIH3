@@ -1,0 +1,56 @@
+{
+  "name": "gov-internship-matcher",
+  "version": "1.0.0",
+  "description": "AI-powered government internship matching platform",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'Static build complete - ready for deployment'",
+    "start": "node api/index.js",
+    "dev": "node api/index.js",
+    "dev-frontend": "npx http-server -p 8080",
+    "deploy": "vercel",
+    "deploy-prod": "vercel --prod",
+    "test-api": "curl http://localhost:3000/api/health || echo 'API not running'",
+    "verify-deployment": "node verify-deployment.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "ml-matrix": "^6.12.1"
+  },
+  "keywords": [
+    "internship",
+    "government",
+    "ai",
+    "matching",
+    "flask",
+    "smart-india-hackathon",
+    "vercel",
+    "serverless"
+  ],
+  "author": "SIH Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/gov-internship-matcher.git"
+  },
+  "engines": {
+    "node": ">=14.x",
+    "python": ">=3.7"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "vercel": {
+    "functions": {
+      "api/index.py": {
+        "runtime": "python3.9"
+      }
+    }
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

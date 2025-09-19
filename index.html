@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gov Internship Matcher - Find Your Perfect Match</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div class="header-top">
+                    <h1><i class="fas fa-briefcase"></i> Gov Internship Matcher</h1>
+                    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+                <p>Discover perfect internship opportunities in Indian Government Ministries</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="input-section">
+                <h2>Find Your Match</h2>
+                
+                <!-- Tab Navigation -->
+                <div class="tab-container">
+                    <button class="tab-btn active" data-tab="skills">Select Skills</button>
+                    <button class="tab-btn" data-tab="resume">Upload Resume</button>
+                </div>
+
+                <!-- Skills Selection Tab -->
+                <div id="skills-tab" class="tab-content active">
+                    <div class="skills-container">
+                        <h3><i class="fas fa-cogs"></i> Select Your Skills</h3>
+                        <p class="instruction">Choose the skills you possess (select multiple)</p>
+                        
+                        <div class="skill-categories">
+                            <div class="skill-category">
+                                <h4><i class="fas fa-code"></i> Programming & Development</h4>
+                                <div class="skill-grid">
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="Python">
+                                        <span class="checkmark"></span>
+                                        Python
+                                    </label>
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="JavaScript">
+                                        <span class="checkmark"></span>
+                                        JavaScript
+                                    </label>
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="React">
+                                        <span class="checkmark"></span>
+                                        React
+                                    </label>
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="Java">
+                                        <span class="checkmark"></span>
+                                        Java
+                                    </label>
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="C++">
+                                        <span class="checkmark"></span>
+                                        C++
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="skill-category">
+                                <h4><i class="fas fa-brain"></i> Data Science & AI</h4>
+                                <div class="skill-grid">
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="Machine Learning">
+                                        <span class="checkmark"></span>
+                                        Machine Learning
+                                    </label>
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="Deep Learning">
+                                        <span class="checkmark"></span>
+                                        Deep Learning
+                                    </label>
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="Data Analysis">
+                                        <span class="checkmark"></span>
+                                        Data Analysis
+                                    </label>
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="Research">
+                                        <span class="checkmark"></span>
+                                        Research
+                                    </label>
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="Statistics">
+                                        <span class="checkmark"></span>
+                                        Statistics
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="skill-category">
+                                <h4><i class="fas fa-paint-brush"></i> Design & UI/UX</h4>
+                                <div class="skill-grid">
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="UI/UX">
+                                        <span class="checkmark"></span>
+                                        UI/UX Design
+                                    </label>
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="Figma">
+                                        <span class="checkmark"></span>
+                                        Figma
+                                    </label>
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="Graphic Design">
+                                        <span class="checkmark"></span>
+                                        Graphic Design
+                                    </label>
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="Adobe Creative Suite">
+                                        <span class="checkmark"></span>
+                                        Adobe Creative Suite
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="skill-category">
+                                <h4><i class="fas fa-tasks"></i> Business & Management</h4>
+                                <div class="skill-grid">
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="Project Management">
+                                        <span class="checkmark"></span>
+                                        Project Management
+                                    </label>
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="Communication">
+                                        <span class="checkmark"></span>
+                                        Communication
+                                    </label>
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="Excel">
+                                        <span class="checkmark"></span>
+                                        Excel
+                                    </label>
+                                    <label class="skill-item">
+                                        <input type="checkbox" value="Business Analysis">
+                                        <span class="checkmark"></span>
+                                        Business Analysis
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="find-matches-btn" class="primary-btn">
+                            <i class="fas fa-search"></i> Find My Matches
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Resume Upload Tab -->
+                <div id="resume-tab" class="tab-content">
+                    <div class="upload-container">
+                        <h3><i class="fas fa-file-upload"></i> Upload Your Resume</h3>
+                        <p class="instruction">Upload your resume and let AI analyze your skills</p>
+                        
+                        <div class="upload-area" id="upload-area">
+                            <div class="upload-content">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Drag & drop your resume here</p>
+                                <p class="or">or</p>
+                                <button class="secondary-btn">Choose File</button>
+                                <input type="file" id="resume-input" accept=".pdf,.doc,.docx,.txt" hidden>
+                            </div>
+                        </div>
+
+                        <div id="file-info" class="file-info hidden">
+                            <div class="file-details">
+                                <i class="fas fa-file-alt"></i>
+                                <span id="file-name"></span>
+                                <button id="remove-file" class="remove-btn">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button id="analyze-resume-btn" class="primary-btn hidden">
+                            <i class="fas fa-cogs"></i> Analyze Resume & Find Matches
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results-section" class="results-section hidden">
+                <div class="results-header">
+                    <h2><i class="fas fa-star"></i> Your Perfect Matches</h2>
+                    <div id="selected-skills" class="selected-skills-display"></div>
+                </div>
+                
+                <div id="loading" class="loading hidden">
+                    <div class="spinner"></div>
+                    <p>Finding your perfect matches...</p>
+                </div>
+
+                <div id="matches-container" class="matches-container"></div>
+                
+                <div id="no-matches" class="no-matches hidden">
+                    <i class="fas fa-search"></i>
+                    <h3>No matches found</h3>
+                    <p>Try selecting different skills or upload a different resume</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 Government Internship Portal. Made with <i class="fas fa-heart"></i> for Smart India Hackathon</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
