@@ -139,6 +139,16 @@ app.get('/api/health', (req, res) => {
     });
 });
 
+// Also handle health check without /api prefix for Vercel
+app.get('/health', (req, res) => {
+    res.json({
+        status: "healthy",
+        message: "Gov Internship Matcher API is running",
+        timestamp: new Date().toISOString().split('T')[0],
+        version: "1.0.0"
+    });
+});
+
 // Test endpoint
 app.get('/api/test', (req, res) => {
     res.json({
@@ -148,7 +158,24 @@ app.get('/api/test', (req, res) => {
     });
 });
 
+app.get('/test', (req, res) => {
+    res.json({
+        method: "GET",
+        message: "GET test successful",
+        api_working: true
+    });
+});
+
 app.post('/api/test', (req, res) => {
+    const data = req.body || {};
+    res.json({
+        method: "POST",
+        received_data: data,
+        message: "POST test successful"
+    });
+});
+
+app.post('/test', (req, res) => {
     const data = req.body || {};
     res.json({
         method: "POST",
@@ -194,6 +221,45 @@ app.get('/api/candidates/:internship_id', (req, res) => {
 
 // Match skills endpoint
 app.post('/api/match-skills', (req, res) => {
+    try {
+        const data = req.body;
+        
+        if (!data) {
+            return res.status(400).json({ error: "No JSON data provided" });
+        }
+        
+        const skills = data.skills || [];
+        
+        if (!skills.length) {
+            return res.status(400).json({ error: "No skills provided" });
+        }
+        
+        // Create a mock student profile with the provided skills
+        const studentProfile = { skills: skills };
+        
+        // Use AI match function
+        const scored = calculateMatches(studentProfile, JSON.parse(JSON.stringify(ALL_INTERNSHIPS)));
+        
+        // Return only necessary fields
+        const result = scored.map(i => ({
+            id: i.id,
+            title: i.title,
+            ministry: i.ministry,
+            location: i.location,
+            required_skills: i.required_skills,
+            match_score: i.match_score,
+        }));
+        
+        res.json(result);
+        
+    } catch (error) {
+        console.error('Error in match_skills:', error);
+        res.status(500).json({ error: `Server error: ${error.message}` });
+    }
+});
+
+// Also handle match-skills without /api prefix for Vercel
+app.post('/match-skills', (req, res) => {
     try {
         const data = req.body;
         
