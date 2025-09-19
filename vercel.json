@@ -2,14 +2,14 @@
   "version": 2,
   "outputDirectory": "./",
   "functions": {
-    "api/index.py": {
-      "includeFiles": "match_utils.py"
+    "api/index.js": {
+      "runtime": "nodejs22.x"
     }
   },
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/index.py",
+      "dest": "/api/index.js",
       "methods": ["GET", "POST", "OPTIONS"]
     },
     {
